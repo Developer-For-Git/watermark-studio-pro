@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gemini & NotebookLM Watermark Studio | Industry Standard Video & Photo Watermark Removal</title>
+  <meta name="description" content="Professional web application for detecting and removing Gemini & NotebookLM watermarks and custom logos from videos and photos using advanced inpainting algorithms, zero-blur smart cropping, and FFmpeg script export." />
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="dark-theme">
+  <!-- App Container -->
+  <div class="app-layout">
+    <!-- Header Navbar -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <i data-lucide="wand-2"></i>
+        </div>
+        <div class="brand-text">
+          <h1>Gemini & NotebookLM Studio</h1>
+          <span class="badge">Pro Edition</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-sample-media" class="btn btn-secondary">
+          <i data-lucide="film"></i> Load Sample Video
+        </button>
+        <button id="btn-export-ffmpeg" class="btn btn-outline">
+          <i data-lucide="terminal"></i> Copy FFmpeg Command
+        </button>
+        <button id="btn-download-script" class="btn btn-outline">
+          <i data-lucide="code"></i> Download Python Script
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace">
+      <!-- Left Sidebar: Controls & Presets -->
+      <aside class="sidebar">
+        <!-- Section: File Upload -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3><i data-lucide="upload-cloud"></i> Input Source</h3>
+          </div>
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="file-input" accept="video/*,image/*" hidden />
+            <div class="dropzone-content">
+              <div class="drop-icon"><i data-lucide="file-up"></i></div>
+              <p class="drop-title">Drag & drop video or photo</p>
+              <p class="drop-subtitle">Supports MP4, MOV, WebM, PNG, JPG, WebP</p>
+              <button class="btn btn-primary btn-sm" onclick="document.getElementById('file-input').click()">Browse File</button>
+            </div>
+          </div>
+          <!-- Loaded File Details -->
+          <div id="media-info" class="media-info hidden">
+            <div class="media-badge" id="media-type-badge"><i data-lucide="video"></i> Video</div>
+            <div class="media-details">
+              <span id="media-name" class="media-name">file.mp4</span>
+              <span id="media-res" class="media-res">1920x1080</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Watermark Detection Presets -->
+        <div class="panel-card">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3><i data-lucide="target"></i> Watermark Presets</h3>
+            <button id="btn-save-preset" class="btn btn-outline btn-sm" title="Save current box as custom preset"><i data-lucide="bookmark-plus"></i> Save</button>
+          </div>
+          <div class="preset-buttons" id="preset-container">
+            <!-- Gemini Presets -->
+            <button class="preset-btn active" data-preset="gemini-1080p">
+              <div class="preset-icon"><i data-lucide="sparkles"></i></div>
+              <div class="preset-info">
+                <span class="preset-title">Gemini 1080p</span>
+                <span class="preset-desc">Sparkle (1694, 854)</span>
+              </div>
+            </button>
+            <button class="preset-btn" data-preset="gemini-4k">
+              <div class="preset-icon"><i data-lucide="sparkles"></i></div>
+              <div class="preset-info">
+                <span class="preset-title">Gemini 4K</span>
+                <span class="preset-desc">Sparkle (3388, 1708)</span>
+              </div>
+            </button>
+
+            <!-- NotebookLM Presets -->
+            <button class="preset-btn" data-preset="notebooklm-video">
+              <div class="preset-icon"><i data-lucide="book-open"></i></div>
+              <div class="preset-info">
+                <span class="preset-title">NotebookLM Video</span>
+                <span class="preset-desc">Badge (1680, 960)</span>
+              </div>
+            </button>
+            <button class="preset-btn" data-preset="notebooklm-photo">
+              <div class="preset-icon"><i data-lucide="file-image"></i></div>
+              <div class="preset-info">
+                <span class="preset-title">NotebookLM Photo</span>
+                <span class="preset-desc">Badge (1620, 980)</span>
+              </div>
+            </button>
+
+            <!-- Other Platforms -->
+            <button class="preset-btn" data-preset="sora-ai">
+              <div class="preset-icon"><i data-lucide="video"></i></div>
+              <div class="preset-info">
+                <span class="preset-title">Sora AI</span>
+                <span class="preset-desc">Bottom-Right</span>
+              </div>
+            </button>
+            <button class="preset-btn" data-preset="tiktok-reels">
+              <div class="preset-icon"><i data-lucide="smartphone"></i></div>
+              <div class="preset-info">
+                <span class="preset-title">TikTok / Reels</span>
+                <span class="preset-desc">Corner Bounding</span>
+              </div>
+            </button>
+            <button class="preset-btn" data-preset="gemini-photo">
+              <div class="preset-icon"><i data-lucide="image"></i></div>
+              <div class="preset-info">
+                <span class="preset-title">Gemini Photo</span>
+                <span class="preset-desc">Auto Sparkle</span>
+              </div>
+            </button>
+            <button class="preset-btn" data-preset="custom">
+              <div class="preset-icon"><i data-lucide="box-select"></i></div>
+              <div class="preset-info">
+                <span class="preset-title">Custom Region</span>
+                <span class="preset-desc">Drag & select</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section: Region Bounding Box Coordinates & Multi-Box Selector -->
+        <div class="panel-card">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3><i data-lucide="sliders"></i> Region Coordinates</h3>
+            <button id="btn-add-box" class="btn btn-secondary btn-sm" title="Add another watermark region"><i data-lucide="plus"></i> Add Box</button>
+          </div>
+          
+          <!-- Box Switcher Tabs if multiple boxes -->
+          <div id="box-tabs" class="box-tabs hidden">
+            <!-- Dynamically populated box pills -->
+          </div>
+
+          <div class="coord-grid">
+            <div class="input-group">
+              <label for="input-x">X Pos (px)</label>
+              <input type="number" id="input-x" value="1694" min="0" />
+            </div>
+            <div class="input-group">
+              <label for="input-y">Y Pos (px)</label>
+              <input type="number" id="input-y" value="854" min="0" />
+            </div>
+            <div class="input-group">
+              <label for="input-w">Width (px)</label>
+              <input type="number" id="input-w" value="92" min="1" />
+            </div>
+            <div class="input-group">
+              <label for="input-h">Height (px)</label>
+              <input type="number" id="input-h" value="92" min="1" />
+            </div>
+          </div>
+          <div class="range-group">
+            <label for="input-feather">Border Blend (Feather): <span id="feather-val">4px</span></label>
+            <input type="range" id="input-feather" min="0" max="20" value="4" />
+          </div>
+        </div>
+
+        <!-- Section: Algorithm Settings (Includes Zero-Blur Smart Crop) -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3><i data-lucide="cpu"></i> Removal Mode</h3>
+          </div>
+          <div class="select-group">
+            <label for="algo-select">Removal Engine Method</label>
+            <select id="algo-select" class="form-select">
+              <option value="delogo-telea">Delogo Telea Inpainting (Standard Conceal)</option>
+              <option value="smart-crop">Smart Crop Mode (Zero-Blur 100% Sharp Removal)</option>
+              <option value="boundary-blend">Bi-directional Patch Blend</option>
+              <option value="gaussian-blur">Gaussian Blur Mask</option>
+            </select>
+          </div>
+          <div id="smart-crop-info" class="smart-crop-info hidden">
+            <p><i data-lucide="scissors"></i> <strong>Zero-Blur Mode</strong>: Trims the watermark region off-screen and scales the frame. Zero blur or pixel distortion!</p>
+          </div>
+          <button id="btn-process" class="btn btn-primary btn-block">
+            <i data-lucide="zap"></i> Process Watermark
+          </button>
+        </div>
+      </aside>
+
+      <!-- Center Content: Canvas & Interactive Viewer -->
+      <section class="viewport">
+        <!-- Viewport Bar -->
+        <div class="viewport-toolbar">
+          <div class="mode-tabs">
+            <button id="tab-interactive" class="tab-btn active"><i data-lucide="move"></i> Interactive Selector</button>
+            <button id="tab-comparison" class="tab-btn"><i data-lucide="columns"></i> Before / After Compare</button>
+          </div>
+          <div class="player-controls hidden" id="video-controls-bar">
+            <button id="btn-play-pause" class="icon-btn"><i data-lucide="play"></i></button>
+            <button id="btn-mute" class="icon-btn" title="Mute/Unmute Audio"><i data-lucide="volume-x"></i></button>
+            <input type="range" id="volume-bar" min="0" max="1" step="0.05" value="1" style="width: 55px; accent-color: var(--notebook-blue);" title="Audio Volume" />
+            <span id="time-display" class="time-display">00:00 / 00:08</span>
+            <input type="range" id="seek-bar" min="0" max="100" value="0" step="0.1" />
+            <button id="btn-loop" class="icon-btn active" title="Toggle Loop"><i data-lucide="repeat"></i></button>
+          </div>
+          <div class="zoom-actions">
+            <button id="btn-zoom-fit" class="icon-btn" title="Fit to Screen"><i data-lucide="maximize-2"></i></button>
+            <button id="btn-zoom-in" class="icon-btn" title="Zoom In"><i data-lucide="zoom-in"></i></button>
+            <button id="btn-zoom-out" class="icon-btn" title="Zoom Out"><i data-lucide="zoom-out"></i></button>
+          </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="canvas-stage" id="canvas-stage">
+          <!-- Interactive Selector View -->
+          <div id="interactive-view" class="view-wrapper">
+            <div class="canvas-wrapper" id="canvas-wrapper">
+              <canvas id="main-canvas"></canvas>
+              <!-- Container for multiple Draggable Selection Overlay Boxes -->
+              <div id="selection-boxes-container">
+                <div id="selection-box" class="selection-box" data-box-index="0">
+                  <div class="box-label">Watermark Region</div>
+                  <div class="handle handle-tl"></div>
+                  <div class="handle handle-tr"></div>
+                  <div class="handle handle-bl"></div>
+                  <div class="handle handle-br"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparison View (Before / After Split Slider with Scrubbing) -->
+          <div id="comparison-view" class="view-wrapper hidden">
+            <div class="comparison-container" id="comparison-container">
+              <canvas id="canvas-before" class="comp-canvas"></canvas>
+              <div class="after-layer" id="after-layer">
+                <canvas id="canvas-after" class="comp-canvas"></canvas>
+              </div>
+              <div class="slider-handle" id="slider-handle">
+                <div class="slider-line"></div>
+                <div class="slider-button"><i data-lucide="chevrons-left-right"></i></div>
+              </div>
+              <div class="comp-badge badge-before">Original</div>
+              <div class="comp-badge badge-after" id="badge-after-text">Watermark Removed</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export & Action Bar -->
+        <div class="action-footer">
+          <div class="status-indicator">
+            <span class="status-dot green"></span>
+            <span id="status-text">Ready to process. Load media or select preset.</span>
+          </div>
+          <div class="export-buttons">
+            <button id="btn-download-media" class="btn btn-success" disabled>
+              <i data-lucide="download"></i> Download Clean File
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal: FFmpeg & Python Code Export -->
+    <div id="code-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modal-title"><i data-lucide="terminal"></i> Export Command & Script</h3>
+          <button id="btn-close-modal" class="icon-btn"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-tabs">
+            <button class="modal-tab active" data-tab="ffmpeg">FFmpeg CLI Command</button>
+            <button class="modal-tab" data-tab="python">Python Automation Script</button>
+          </div>
+          <div class="code-box-wrapper">
+            <pre><code id="code-output">ffmpeg -i input.mp4 -vf "delogo=x=1694:y=854:w=92:h=92" -c:v libx264 -crf 15 -preset fast -c:a copy output_no_watermark.mp4</code></pre>
+            <button id="btn-copy-code" class="btn btn-primary btn-sm copy-btn"><i data-lucide="copy"></i> Copy Code</button>
+          </div>
+          <p class="modal-note">Run this command directly in your terminal or use Python for local automated processing.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
