@@ -965,36 +965,58 @@ canvas {
 
 /* --- RESPONSIVE MOBILE & TABLET STYLES --- */
 @media (max-width: 992px) {
-  .app-header {
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 10px 14px;
+  html, body {
+    overflow-y: auto !important;
   }
-  
+
+  .app-layout {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .app-header {
+    position: relative;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    height: auto;
+  }
+
   .header-actions {
     width: 100%;
-    justify-content: flex-start;
+    display: flex;
+    gap: 8px;
     overflow-x: auto;
-    padding-bottom: 2px;
+    padding-bottom: 4px;
   }
 
   .workspace {
     flex-direction: column;
     height: auto;
-    overflow-y: auto;
+    overflow: visible;
   }
 
   .sidebar {
-    width: 100%;
-    max-height: none;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow-y: visible !important;
     border-right: none;
     border-bottom: 1px solid var(--border-color);
+    padding: 12px;
   }
 
   .viewport {
     width: 100%;
     min-height: 480px;
-    height: 60vh;
+    height: auto;
+    padding: 12px;
+  }
+
+  .canvas-stage {
+    min-height: 380px;
   }
 }
 
@@ -1010,10 +1032,25 @@ canvas {
 
   .preset-buttons {
     grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .preset-btn {
+    padding: 8px;
+  }
+
+  .preset-title {
+    font-size: 0.72rem;
+    white-space: normal;
+  }
+
+  .preset-desc {
+    font-size: 0.62rem;
   }
 
   .coord-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 
   .viewport-toolbar {
@@ -1024,6 +1061,7 @@ canvas {
   .player-controls {
     width: 100%;
     order: 3;
+    justify-content: space-between;
   }
 
   .modal-card {
@@ -1032,7 +1070,8 @@ canvas {
   }
 
   .btn {
-    padding: 8px 12px;
+    padding: 7px 10px;
+    font-size: 0.75rem;
   }
 }
 
