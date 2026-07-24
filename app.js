@@ -52,6 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const mediaTypeBadge = document.getElementById('media-type-badge');
   const mediaNameEl = document.getElementById('media-name');
   const mediaResEl = document.getElementById('media-res');
+  const btnClearMedia = document.getElementById('btn-clear-media');
+  const btnClearMediaFooter = document.getElementById('btn-clear-media-footer');
 
   const mainCanvas = document.getElementById('main-canvas');
   const ctx = mainCanvas.getContext('2d', { willReadFrequently: true });
@@ -202,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateMediaInfoDisplay() {
     mediaInfo.classList.remove('hidden');
+    if (btnClearMedia) btnClearMedia.classList.remove('hidden');
     mediaNameEl.textContent = state.mediaName;
     mediaResEl.textContent = `${state.originalWidth}x${state.originalHeight}`;
     
@@ -211,6 +214,39 @@ document.addEventListener('DOMContentLoaded', () => {
       mediaTypeBadge.innerHTML = `<i data-lucide="image"></i> Image`;
     }
     if (window.lucide) lucide.createIcons();
+  }
+
+  function clearMedia() {
+    if (state.mediaElement && state.mediaType === 'video') {
+      state.mediaElement.pause();
+      state.mediaElement.src = '';
+    }
+
+    state.mediaType = null;
+    state.mediaElement = null;
+    state.mediaName = '';
+    state.mediaUrl = null;
+    state.isProcessed = false;
+
+    // Clear canvases
+    ctx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+    const ctxB = canvasBefore.getContext('2d');
+    const ctxA = canvasAfter.getContext('2d');
+    ctxB.clearRect(0, 0, canvasBefore.width, canvasBefore.height);
+    ctxA.clearRect(0, 0, canvasAfter.width, canvasAfter.height);
+
+    // Hide media info and player controls
+    mediaInfo.classList.add('hidden');
+    if (btnClearMedia) btnClearMedia.classList.add('hidden');
+    videoControlsBar.classList.add('hidden');
+
+    // Disable download button
+    btnDownloadMedia.disabled = true;
+
+    // Reset file input
+    fileInput.value = '';
+
+    updateStatus('Cleared workspace. Drag & drop a new video or photo to process.', 'green');
   }
 
   // --- CANVAS & OVERLAY LAYOUT ---
@@ -727,6 +763,8 @@ if __name__ == "__main__":
 
     btnProcess.addEventListener('click', processWatermark);
     btnDownloadMedia.addEventListener('click', downloadCleanFile);
+    if (btnClearMedia) btnClearMedia.addEventListener('click', clearMedia);
+    if (btnClearMediaFooter) btnClearMediaFooter.addEventListener('click', clearMedia);
     btnSampleMedia.addEventListener('click', () => loadSampleVideo('Hand_opening_laptop_on_desk_202607232139.mp4'));
 
     btnExportFFmpeg.addEventListener('click', () => showCodeModal('ffmpeg'));

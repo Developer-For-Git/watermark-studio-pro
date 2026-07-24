@@ -46,8 +46,9 @@
       <aside class="sidebar">
         <!-- Section: File Upload -->
         <div class="panel-card">
-          <div class="panel-header">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center;">
             <h3><i data-lucide="upload-cloud"></i> Input Source</h3>
+            <button id="btn-clear-media" class="btn btn-outline btn-sm hidden" title="Clear current video and start fresh"><i data-lucide="trash-2"></i> Clear</button>
           </div>
           <div class="dropzone" id="dropzone">
             <input type="file" id="file-input" accept="video/*,image/*" hidden />
@@ -264,6 +265,9 @@
             <span id="status-text">Ready to process. Load media or select preset.</span>
           </div>
           <div class="export-buttons">
+            <button id="btn-clear-media-footer" class="btn btn-secondary" title="Clear media and upload new video">
+              <i data-lucide="refresh-cw"></i> Clear / New Video
+            </button>
             <button id="btn-download-media" class="btn btn-success" disabled>
               <i data-lucide="download"></i> Download Clean File
             </button>
