@@ -963,6 +963,79 @@ canvas {
   gap: 6px;
 }
 
+/* --- RESPONSIVE MOBILE & TABLET STYLES --- */
+@media (max-width: 992px) {
+  .app-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .workspace {
+    flex-direction: column;
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .viewport {
+    width: 100%;
+    min-height: 480px;
+    height: 60vh;
+  }
+}
+
+@media (max-width: 600px) {
+  .brand h1 {
+    font-size: 1.05rem;
+  }
+
+  .brand-logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .preset-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .coord-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .viewport-toolbar {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .player-controls {
+    width: 100%;
+    order: 3;
+  }
+
+  .modal-card {
+    width: 94vw;
+    margin: 10px;
+  }
+
+  .btn {
+    padding: 8px 12px;
+  }
+}
+
 .hidden {
   display: none !important;
 }
